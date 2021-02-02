@@ -19,7 +19,7 @@
 		<maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
 		<nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
 
-		<revision>1.0.0</revision>
+		<revision>1.0.1</revision>
 		<haohope-bom.version>1.0.0</haohope-bom.version>
 	</properties>
 	<dependencyManagement>

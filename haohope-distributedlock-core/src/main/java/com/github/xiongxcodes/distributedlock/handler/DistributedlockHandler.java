@@ -40,9 +40,10 @@ public class DistributedlockHandler {
      *
      * @param joinPoint
      * @return Object
+     * @throws Throwable 
      */
     @Around("distributedLock()")
-    public Object around(ProceedingJoinPoint joinPoint) {
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         log.info("进入RedisLock环绕通知...");
         Object obj = null;
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
@@ -60,8 +61,10 @@ public class DistributedlockHandler {
         Boolean success = false;
         try {
             success = rLock.tryLock(waitTime, expireSeconds, TimeUnit.SECONDS);
+            log.info("获取锁成功....");
         } catch (InterruptedException e) {
             e.printStackTrace();
+            log.info("获取锁失败....");
             success = false;
         }
         if (success) {
@@ -70,6 +73,7 @@ public class DistributedlockHandler {
                 obj = joinPoint.proceed();
             } catch (Throwable throwable) {
                 log.error("获取锁异常", throwable);
+                throw throwable;
             } finally {
                 // 释放锁
                 rLock.unlock();
@@ -77,6 +81,7 @@ public class DistributedlockHandler {
             }
         } else {
             log.error("获取锁失败", apiDistributedLockAnn.failMsg());
+            throw new Exception(apiDistributedLockAnn.failMsg());
         }
         log.info("结束RedisLock环绕通知...");
         return obj;
